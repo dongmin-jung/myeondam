@@ -66,10 +66,10 @@
       - 클라이언트에서 서버 응답으로 받은 저 정보들을 가지고, WebAuthn API 요청
       - 브라우저에서 WebAuthn API가 불리면 플랫폼(OS와 브라우저)가 인증장치와 CTAP으로 통신 시작
     - 인증장치는 user verification이나 user presence를 체크하고, 새로운 key pair와 attestation을 생성
-    - 인증장치는 공개키와 attestation으로 assertion을 생성하고 개인키로 서명한 뒤, 해당 값을 서버로 전송
+    - 인증장치는 공개키와 attestation으로 assertion을 생성하고 개인키로 서명하여 서버로 전송
     - 서버는 서명을 확인하여 assertion을 검증하고, 공개키를 저장한다.
   - 인증 - 사용자의 로그인/거래요청 시
-    - 거의 비슷한데, 인증장치는 attestation 없이 assertion을 생성해서 서버로 보내고, 서버는 assertion의 키 식별자를 기반으로 공개키를 찾아 서명을 검증
+    - 거의 비슷한데, 인증장치는 attestation 없이 assertion을 생성, 개인키로 서명해서 서버로 보내고, 서버는 공개키로 이를 검증
   - Keycloak, Windows, Chrome, Windows Hello, IR Camera 예시 설명
 
 ---
