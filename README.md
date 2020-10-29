@@ -10,7 +10,7 @@
     - 불편함
       - 온갖 사이트마다 다 다른 정책 → 기억하기 어렵고 번거로움
     - 보안이 약함
-      - DB Leak, Service에 Code Injection, Man in the Middle, Malware
+      - DB Leak, Server Code Injection, MITM, Malware
       - 재사용성이 높음 → 하나 뚫리면 다 털림 (구글 비번 털린 실제 경험 - 이집트, 중국, 대만)
       - 서버를 가장한 제3자에게 비밀번호를 털리는 경우
         - 중고나라 안전결제 유도하여 네이버페이 모방 페이지를 통해 ID/PW 탈취하는 방식 성행 중
