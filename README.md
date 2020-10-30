@@ -10,8 +10,8 @@
     - 불편함
       - 온갖 사이트마다 다 다른 정책 → 기억하기 어렵고 번거로움
     - 보안이 약함
-      - 재사용성이 높음 → 하나 뚫리면 다 털림 (구글 비번 털린 실제 경험 - 이집트, 중국, 대만)
-      - 중고나라 안전결제 유도하여 네이버페이 모방 페이지를 통해 ID/PW 탈취하는 범죄 성행 중
+      - 재사용성이 높음 → 하나 뚫리면 다 털림 (실제로 네이버, 구글 계정 털려봤음)
+      - 중고나라 거래 시 네이버페이 모방 페이지를 통해 ID/PW 탈취하는 범죄 성행 중
 
 ---
 
@@ -22,10 +22,12 @@
       - SW - 구글, 마소, 아마존, 페북, 애플 / HW - 인텔, 레노버 / 카드 - 비자, 마스터 / 국내 - 삼성, 라인, 라온시큐어 ...
       - 이상은 보드레벨의 일부이고, 스폰서레벨은 훨씬 많음
   - 2014년 12월 FIDO 1.0 표준 - UAF & U2F
-    - UAF (Universal Authentication Framework)
+    - UAF
+      - Universal Authentication Framework
       - 모바일 앱에서 생체인증을 사용하기 위한 표준
       - 예시 - 은행 앱 로그인, 삼성페이 결제 등
-    - U2F (Universal 2nd Factor)
+    - U2F
+      - Universal 2nd Factor
       - ID/PW에 추가적인 인증수단을 등록하여 보안을 강화하는 것
       - 특수한 하드웨어 인증장치 필요 (USB Security Key)
       - 예시 - Google 계정에서 옵션 활성화
@@ -103,7 +105,6 @@
 
 - Keycloak의 FIDO2 지원 현황
   - webauthn4j('j'ava? 'j'apan?)라는 FIDO2 오픈소스 서버 개발하는 (주로 Hitachi 소속) 사람들이 Keycloak 플러그인 형태로 개발해오던 것이, Keycloak으로의 pull request가 merge되어 2019년 11월 Keycloak 8.0.0 부터 passwordless, 2-factor 등록/인증 지원 시작
-  - 하나의 Realm은  OIDC로 
   - 아직 최소한의 기능만 제공되고 있어서 2가지 한계가 있음
     - 키 등록이 로그인 시점에 강제됨 - 인증장치 없는 사용자, IE 사용하는 사용자는 사용 불가
     - 키 조회/추가/삭제 불가 - 최초에 등록한 바로 그 인증장치로만 passwordless 로그인 가능
