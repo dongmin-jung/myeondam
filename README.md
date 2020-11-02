@@ -15,7 +15,7 @@
 
 ---
 
-- FIDO 역사와 구성
+- FIDO 표준의 구성
   - 2012년 FIDO Alliance 설립
     - 편리하고 강력한 보안, password 없고 궁극적으로는 ID도 없는 세상
     - 회원사
