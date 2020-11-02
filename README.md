@@ -4,9 +4,9 @@
 
 - FIDO 란?
   - Fast IDentity Online
-  - 어원은 라틴어 - 신뢰하다, 의지하다 (링컨 대통령 개의 이름)
-  - 생체인증과 동의어처럼 많이 사용되지만, FIDO 자체가 생체인증인 것은 아님
-  - Password의 불편함과 취약성 때문에 등장하게 되었음
+  - 라틴어 fido - 신뢰하다, 의지하다 (링컨 대통령 개의 이름)
+  - 생체인증과 동의어처럼 많이 사용되지만, FIDO 자체가 생체인증을 뜻하는 것은 아님
+  - Password의 불편함과 취약성 때문에 생겨남
     - 기억하기 번거로움
     - 재사용이 많이 됨 → 하나 뚫리면 다 털림 (실제로 네이버, 구글 계정 털려봄)
     - 중고나라 거래에서 네이버페이 모방 페이지를 통해 ID/PW 탈취하는 범죄 지금도 성행 중
@@ -14,10 +14,9 @@
 ---
 
 - FIDO 표준의 구성
-  - 2012년 FIDO Alliance 설립
-    - 회원사
-      - SW - 구글, 마소, 아마존, 페북, 애플 / HW - 인텔, 레노버 / 카드 - 비자, 마스터 / 국내 - 삼성, 라인, 라온시큐어 ...
-      - 이상은 보드레벨의 일부이고, 스폰서레벨은 훨씬 많음
+  - 만드는 곳 - FIDO Alliance
+    - SW - 구글, 마소, 아마존, 페북, 애플 / HW - 인텔, 레노버 / 카드 - 비자, 마스터 / 국내 - 삼성, 라인, 라온시큐어 ...
+    - 이상은 보드레벨의 일부이고, 스폰서레벨은 훨씬 많음
   - 2014년 12월 FIDO 1.0 표준 - UAF & U2F
     - UAF - Universal Authentication Framework
       - 모바일 앱에서 생체인증을 사용하기 위한 표준
@@ -32,33 +31,35 @@
       - IE는 해당X
     - CTAP - Client To Authenticator Protocol
       - 클라이언트(브라우저+OS)가 인증장치와 소통하는 데 사용되는 low level 프로토콜
+      - 인증장치란 특별한 하드웨어나 소프트웨어인데, 나중에 설명할 것
 
 ---
 
 - FIDO 등록/인증 동작 방식
   - FIDO 인증은 단말에서 사용자 확인 후 전자서명 값을 서버로 보내 인증을 완료하는 방식 - UAF, U2F, FIDO2 모두 이러함
-  - HyperAuth가 FIDO2 기반으로 설명
-  - 등록 - key pair를 생성하고 공개키를 FIDO 서버에 등록
+  - HyperAuth가 브라우저용이니 브라우저를 위한 FIDO2 기준으로 동작과정 설명
+  - 등록 - key pair를 생성하고 공개키를 FIDO 서버에 등록 (그림)
     - 서버에서 클라이언트로 챌린지, 서버주소, 사용자이름 등을 보냄
     - 클라이언트에서 WebAuthn API가 불리면 CTAP이 시작됨
-      - 자세히 말하면, WebAuthn은 브라우저의 Credential Management API에 store/get 말고 create가 추가된 것
-      - CTAP을 통해 클라이언트가 인증장치를 찾아 데이터를 전송하고, 인증장치는 사용자를 확인한 후 service-specific key pair 생성
+      - 정확히는, WebAuthn은 브라우저의 Credential Management API에 store/get 말고 create가 추가된 것임
+      - credential create가 불리면 CTAP을 통해 클라이언트가 인증장치를 찾아 데이터를 전송하고, 인증장치는 사용자 확인 후 key pair 생성
         - 이때 인증장치는 user verification을 할 수도 있고, user presence만 확인할 수도 있음
-    - 인증장치는 assertion을 생성하고 개인키로 서명하여, 공개키와 함께 서버로 전송
-      - assertion은 서버로부터 받았던 정보, 인증장치에 대한 정보, 인증방식에 대한 정보 등을 포함
-      - 생체정보나 개인키 등은 인증장치를 떠나지 않고, 서버로 전송되지 않음
-    - 서버는 assertion을 검증하고 공개키를 저장
+        - 이때 생성된 key pair는 동일한 서버의 동일한 사용자에 대해서만 유효함
+    - 인증장치는 assertion을 생성하고 개인키로 서명하여 공개키와 함께 반환
+      - assertion은 서버로부터 받았던 정보, 인증장치에 대한 정보, 인증방식에 대한 정보 등을 가지는 오브젝트가 인코딩된 것
+      - 생체정보와 개인키는 인증장치를 떠나지 않음
+    - 클라이언트가 서버로 이를 전달하면 서버는 assertion을 검증한 후 공개키를 저장
   - 인증 - 로그인/거래요청 시
-    - challenge를 받아 assertion을 생성하고 개인키로 서명하여 서버로 전송, 서버에서는 이미 등록되어 있는 공개키로 검증
+    - challenge를 받고 assertion을 생성하고 개인키로 서명하여 서버로 전송, 서버에서는 공개키로 검증
   - FIDO 인증의 장점
     - 기억력에 의존X
     - challenge-response 방식이므로, 인증 데이터를 가로채도 재사용 불가
     - 서버에 공개키만 보관되므로, 서버 DB를 털어도 부정사용 불가
     - service-specific key pair, https 사이트에서만 동작, 인증 과정에서 서버주소 재확인하여 MITM 방지
-  - 한계
+  - 단점?
     - 묵비권 행사 불가
     - 생체정보는 바꿀 수 없으니, 위조에 속지 않도록 인식기술이 계속 발전해야 함
-  - Keycloak의 FIDO2 지원 현황
+  - HyperAuth에 FIDO2 지원 
     - webauthn4j('j'ava? 'j'apan?)라는 FIDO2 서버 오픈소스가 있음 (주로 Hitachi 소속 사람들)
     - webauthn4j에서 개발한 Keycloak의 플러그인이 있었는데, Keycloak에 merge되어 2019년 11월 Keycloak 8.0.0 부터 FIDO2 등록/인증이 지원되기 시작
     - 아직 최소한의 기능만 제공되고 있어서, 2가지 치명적인 한계가 있음
