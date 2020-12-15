@@ -1,118 +1,49 @@
-# HyperAuth 생체인증과 FIDO 표준
+# HyperCAS CMDB 설계 방향
 
----
+## HyperCAS는 무엇인가
 
-- FIDO 란?
-  - Fast IDentity Online
-  - 라틴어 fido - 신뢰하다, 의지하다 (링컨 대통령 개의 이름)
-  - 생체인증과 동의어처럼 많이 사용되지만, FIDO 자체가 생체인증을 뜻하는 것은 아님
-  - Password의 불편함과 취약성 때문에 생겨남
-    - 기억하기 번거로움
-    - 재사용이 많이 됨 → 하나 뚫리면 다 털림 (실제로 네이버, 구글 계정 털려봄)
-    - 중고나라 거래에서 네이버페이 모방 페이지를 통해 ID/PW 탈취하는 범죄 지금도 성행 중
+- HyperCloud를 사용/운영하면서 발생할 수 있는 위험을 모니터링, 예방, 대응해줄 제품
+- HyperCAS 아키텍처
+  - CMDB는 CI Space와 Config Space로 구성
+  - Config Space는 HyperCloud 리소스들에 적용될 모든 구성과 설정 관련 룰 및 관계 정보를 가지고 있음
+  - CI Space는 HyperCloud의 '실제 생성된' 모든 리소스의 구성과 설정 정보를 가지고 있음
+  - 각 SysMaster의 log DB, k8s log DB -> HyperData로 분석
 
----
+## 현황
 
-- FIDO 표준의 구성
-  - 만드는 곳 - FIDO Alliance
-    - SW - 구글, 마소, 아마존, 페북, 애플 / HW - 인텔, 레노버 / 카드 - 비자, 마스터 / 국내 - 삼성, 라인, 라온시큐어 ...
-    - 이상은 보드레벨의 일부이고, 스폰서레벨은 훨씬 많음
-  - 2014년 12월 FIDO 1.0 표준 - UAF & U2F
-    - UAF - Universal Authentication Framework
-      - 모바일 앱에서 생체인증을 사용하기 위한 표준
-      - 예시 - 은행 앱 로그인, 삼성페이 결제 등
-    - U2F - Universal 2nd Factor
-      - ID/PW에 추가적인 인증수단을 등록하여 보안을 강화하는 것
-      - 예시 - Google 계정에서 옵션 활성화
-  - 2019년 3월 FIDO2 표준 - WebAuthn & CTAP
-    - 브라우저에서 생체인증을 사용하기 위해 만들어진 표준
-    - WebAuthn - Web Authentication
-      - W3C 표준으로 공인되어, 주요 브라우저에 내장 JavaScript API 추가됨 (Windows, Android, Mac / Chrome, Edge, FireFox)
-      - IE는 해당X
-    - CTAP - Client To Authenticator Protocol
-      - 클라이언트(브라우저+OS)가 인증장치와 소통하는 데 사용되는 low level 프로토콜
-      - 인증장치란 특별한 하드웨어나 소프트웨어인데, 나중에 설명할 것
+- 4단계 계획 중 현재 1단계
+  1. CMDB만 -> 잘못된 설정을 방지
+  2. SysMaster WAS, SysMaster DB 각각으로부터 문제를 체크
+  3. SysMaster, HyperData -> 연동 문제를 체크, 동작 중의 이상치는 머신러닝으로 체크
+  4. 확장된 CMDB + SysMaster + HyperData
+- 시나리오
+  - 설정 데이터 w/ Config Space
+    - Tibero 설정
+  - 관계 데이터 w/ Config Space & CI Space
+    - Pod label 바꿀 때 Service와 연결이 끊어질 것을 경고
+- 수행 흐름
+  - API서버가 하나 있어서, 사용자가 설정 test를 하고자 하면 이를 validate
+  - API서버는 validate를 위해 Config Space 및 CI Space를 조회
 
----
+## CI Space
 
-- FIDO 등록/인증 동작 방식
-  - FIDO 인증은 단말에서 사용자 확인 후 전자서명 값을 서버로 보내 인증을 완료하는 방식 - UAF, U2F, FIDO2 모두 이러함
-  - HyperAuth가 브라우저용이니 브라우저를 위한 FIDO2 기준으로 동작과정 설명
-  - 등록 - key pair를 생성하고 공개키를 FIDO 서버에 등록 (그림)
-    - 서버에서 클라이언트로 챌린지, 서버주소, 사용자이름 등을 보냄
-    - 클라이언트에서 WebAuthn API가 불리면 CTAP이 시작됨
-      - 정확히는, WebAuthn은 브라우저의 Credential Management API에 store/get 말고 create가 추가된 것임
-      - credential create가 불리면 CTAP을 통해 클라이언트가 인증장치를 찾아 데이터를 전송하고, 인증장치는 사용자 확인 후 key pair 생성
-        - 이때 인증장치는 user verification을 할 수도 있고, user presence만 확인할 수도 있음
-        - 이때 생성된 key pair는 동일한 서버의 동일한 사용자에 대해서만 유효함
-    - 인증장치는 assertion을 생성하고 개인키로 서명하여 공개키와 함께 반환
-      - assertion은 서버로부터 받았던 정보, 인증장치에 대한 정보, 인증방식에 대한 정보 등을 가지는 오브젝트가 인코딩된 것
-      - 생체정보와 개인키는 인증장치를 떠나지 않음
-    - 클라이언트가 서버로 이를 전달하면 서버는 assertion을 검증한 후 공개키를 저장
-  - 인증 - 로그인/거래요청 시
-    - challenge를 받고 assertion을 생성하고 개인키로 서명하여 서버로 전송, 서버에서는 공개키로 검증
-  - FIDO 인증의 장점
-    - 기억력에 의존X
-    - challenge-response 방식이므로, 인증 데이터를 가로채도 재사용 불가
-    - 서버에 공개키만 보관되므로, 서버 DB를 털어도 부정사용 불가
-    - service-specific key pair, https 사이트에서만 동작, 인증 과정에서 서버주소 재확인하여 MITM 방지
-  - 단점?
-    - 묵비권 행사 불가
-    - 생체정보는 바꿀 수 없으니, 위조에 속지 않도록 인식기술이 계속 발전해야 함
-  - HyperAuth에 FIDO2 지원 
-    - webauthn4j('j'ava? 'j'apan?)라는 FIDO2 서버 오픈소스가 있음 (주로 Hitachi 소속 사람들)
-    - webauthn4j에서 개발한 Keycloak의 플러그인이 있었는데, Keycloak에 merge되어 2019년 11월 Keycloak 8.0.0 부터 FIDO2 등록/인증이 지원되기 시작
-    - 아직 최소한의 기능만 제공되고 있어서, 2가지 치명적인 한계가 있음
-      - passwordless login을 optional로 하더라도, 가입시점에 키 등록이 강제됨 - 인증장치 없는 사용자, IE 사용자는 로그인 불가
-      - 키 조회/추가/삭제 불가 - 최초에 등록한 바로 그 인증장치로만 passwordless 로그인을 할 수 있음
-    - Keycloak 디자인 문서에 따르면, 추후에는 위 문제를 해결하고 다음을 지원할 계획이라고 함
-      - 자기 계정 관리 화면에서 키 등록을 할 수 있게 한다
-      - 키를 여러 개 등록하고 관리할 수 있게 한다.
-    - 단, DB 스키마, 기존 데이터, UI가 지금과 완전히 달라질 수 있으니, 아직까지는 테스트 용도로만 사용하라 하고 있음
+- HyperCloud 설정값, 리소스들의 설정/상태값 저장 및 업데이트하는 데이터베이스
+- k8s 리소스들은 설정값들이 depth와 hierarchy를 가진 tree 구조
+- 모든 hierarchy를 RDB만으로 CI Space 구현하는 경우
+  - 쿼리 성능은 우수하겠지만,
+  - k8s, jeus, tibero 등 수많은 CI 타입에 대하여 모두 DB 설계가 필요
+- xml 기반으로 CI Space 구현하는 경우
+  - 모든 CI 타입에 대해 전부 테이블을 설계할 필요 없이, xml 파일 형태로 저장
+    - 이렇게 해도 tibero에서 xml 쿼리 조회가 가능
+  - jeus, tibero 설정값을 xml로 저장, etcd로부터 받는 json 데이터도 xml로 만들어 저장
+  - 빠른 개발이 가능하지만, xpath 쿼리 성능이 안 좋을 수 있음
+- 일단 xml 기반으로 구현하여 성능을 테스트하고, 필요하다고 판단되면 CI별 table을 만든다
 
----
+## Config Space
 
-- 인증장치와 생체인증기술
-  - 하드웨어 인증장치
-    - USB Secure Key - 버튼/터치/PIN 중 택1하여 인증
-    - 새로운 key pair를 계속 만들어낼 수 있어야 하고, 사용자 정보와 개인키를 저장할 '안전한 공간'을 가지고 있어야 함
-  - 소프트웨어 인증장치
-    - 애플의 FaceID, TouchID, 안드로이드에도 있는데 이름은 없음
-    - Windows Hello - 얼굴인식/지문인식/PIN을 등록해두고 택1하여 인증
-    - 생체인식 데이터는 외부로 전송X, 기기에서 생체인식 데이터를 탈취해도 원시샘플로 환원 불가
-  - 지문인식기술
-    - 인식 하드웨어(광학식/정전용량식/초음파식) + 분석 소프트웨어 필요
-    - Windows Hello에서 어떻게 지문을 분석/판독하는지는 아무것도 공개X
-    - Ubuntu 20.04 LTS부터 지원되는 지문인식은 NIST(미 상무부 산하 국립표준기술연구소) 코드를 사용
-      - 특징점 추출 알고리즘 (그림)
-        - 이미지에 enhance, binarize, smoothing, thinning 처리
-        - 끝점(융선이 끊기는 곳), 분기점(융선이 나뉘어지는 곳)
-        - 각 특징점에서의 융선의 orientation도 함께 저장
-      - 지문 비교 판독 알고리즘 (그림)
-        - BOZORTH3 - FBI에서 bozorth98 만들고 NIST에서 2차례 수정
-        - 추출된 특징점 이미지에서, 각 특징점 2개의 쌍에 대해 특징점 사이의 거리, 특징점들을 연결하는 선과 각 특징점에서의 융선의 orientation이 이루는 각도를 테이블로 저장하여 1:1이나 1:다 비교
-          - rotation과 translation에 대해 invariant함
-        - 테이블을 비교하여 산출한 점수는 두 지문에서 일치하는 특징점 개수와 근사적으로 같음
-        - 지문 하나 당 특징점은 대개 80개 미만이고, 일치하는 특징점이 40개를 넘으면 같은 지문으로 봄
-  - 얼굴인식기술
-    - Apple의 FaceID
-    - Windows Hello 얼굴인식은 IR카메라를 사용함
-      - 얼굴을 찾고, landmark 찾음 → 얼굴각도 정면인지 확인 → landmark point들에서의 명암차를 수치화하여 representation vector 생성 → 저장된 representation과의 유사성이 threshold 넘는지 봄
-        - 머신러닝으로 학습된 모델로 threshold 계산함
-        - 모델은 MS에서 개발, 학습시켜 Windows에 포함시켜 배포한 것이고, 실행은 각 기기에서 일어남
-      - 본인이 시도하면 95%↑ / 5%↓, 타인이 시도하면 1/10만↓, 일란성 쌍둥이도 잘 구분함 (FaceID는 잘 못한다고 함)
-    - Debian/Ubuntu에서 얼굴인식 로그인을 지원하기 위해 만들어진 오픈소스는 dlib 라이브러리의 Residual Network 모델을 사용함 (dlib 즐겨찾기 1만 / k8s가 7만)
-      - Residual Network는 2015년 이미지 분류 분야 대회 3개에서 우승하고 현재 인용수 6만
-      - dlib의 ResNet은 논문의 ResNet-34를 간소화하고 3백만 개 얼굴로 학습시킨 것
-
----
-
-- 결론
-  - FIDO2는 아직 대중화되지 않음. 생체인증은 아직까지 모바일 앱에서나 윈도우 잠금해제에만 많이 쓰이고 있음.
-  - 아직 하드웨어/소프트웨어 보급이 부족하고, FIDO2가 표준이 된 지 얼마 안 되었기 때문
-  - 그러나 웹에서도 생체정보 기반 인증은 점점 더 많이 사용될 것임. 3가지 이유
-    - 하드웨어 - 100만원 아래의 랩탑에도 점점 지문인식장치 탑재된 것이 많아지는 추세
-    - 소프트웨어 - Ubuntu 20.04 LTS부터 지문인식 로그인 지원
-    - 제도적 - 공인인증서 사용 의무화 폐지 이후 스마트폰 금융 앱에서 생체인증이 많이 활성화 → Why not 인터넷 뱅킹?
-  - FIDO2가 대중화될 때면, Keycloak에서의 지원도 개선되어 있을 것
-  - HyperAuth 생체인증도 추후에 FIDO2 기능이 강화된 Keycloak에서 Realm Authentication Flow 설정을 통해 지원하면 어떨까?
+- HyperCloud의 바람직한 상태를 유지하기 위해 필요한 rule set (필수 property가 뭔지, 각 값의 바람직한 range가 뭔지)
+- RDB로 구현한다면 Tibero를 사용할 수 있지만, 수많은 k8s 리소스 간 관계와 룰을 표현하기는 어려움
+- OWL2 기반의 Ontology KDB로 구현하고자 함
+  - Subject, Predicate, Object 형식을 사용하므로 관계의 표현에 적합함
+  - Expression을 통한 필터링 가능(?)
+- 하지만 KDB로만 할 것은 아님 -> KDB의 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둔다
