@@ -18,7 +18,7 @@
   4. 확장된 CMDB + SysMaster + HyperData
 - 시나리오
   - 설정 데이터 w/ Config Space
-    - Tibero 설정
+    - Tibero 설정(??)
   - 관계 데이터 w/ Config Space & CI Space
     - Pod label 바꿀 때 Service와 연결이 끊어질 것을 경고
 - 수행 흐름
@@ -43,7 +43,7 @@
 
 - HyperCloud의 바람직한 상태를 유지하기 위해 필요한 rule set (필수 property가 뭔지, 각 값의 바람직한 range가 뭔지)
 - RDB로 구현한다면 Tibero를 사용할 수 있지만, 수많은 k8s 리소스 간 관계와 룰을 표현하기는 어려움
-- OWL2 기반의 Ontology KDB로 구현하고자 함
+- OWL2 기반의 Ontology KDB(??)로 구현하고자 함
   - Subject, Predicate, Object 형식을 사용하므로 관계의 표현에 적합함
-  - Expression을 통한 필터링 가능(?)
+  - Expression(무슨무슨 룰??)으로 조건을 걸어 필터링(??)
 - 하지만 KDB로만 할 것은 아님 -> KDB의 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둔다
