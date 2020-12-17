@@ -45,5 +45,5 @@
 - RDB로 구현한다면 Tibero를 사용할 수 있지만, 수많은 k8s 리소스 간 관계와 룰을 표현하기는 어려움
 - OWL2 기반의 Ontology KDB(??)로 구현하고자 함
   - Subject, Predicate, Object 형식을 사용하므로 관계의 표현에 적합함
-  - Expression(무슨무슨 룰??)으로 조건을 걸어 필터링(??)
+  - Expression(Reasoning Rule??)으로 조건을 걸어 필터링(??)
 - 하지만 KDB로만 할 것은 아님 -> KDB의 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둔다
