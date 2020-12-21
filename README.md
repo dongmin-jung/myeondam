@@ -8,14 +8,14 @@
   2. SysMaster WAS, SysMaster DB 각각으로부터 문제를 체크
   3. SysMaster, HyperData -> 연동 문제를 체크, 머신러닝으로 이상치 탐지
   4. 확장된 CMDB + SysMaster + HyperData
-- 시나리오
-  - Tibero 설정에 대한 검증 - '바람직한 설정'에 대한 DB 필요
-  - Pod label 바꿀 때 Service와 연결이 끊어질 것을 경고 - '현재 리소스 간 형성되어 있는 관계들'에 대한 DB 필요
+- 1단계에서의 시나리오
+  - 사용자가 Tibero 설정에 대한 검증을 요청하는 경우 - '바람직한 설정과 관계 룰' DB 필요
+  - 사용자가 Pod label 바꾸면서 검증을 요청하면, Service와의 연결이 끊어질 것을 경고 - '실제 환경 구성 및 실존하는 리소스 간 관계들' DB 필요
 - HyperCAS 아키텍처
-  - API서버가 있어서, 사용자가 설정을 테스트하고자 하면 CMDB를 조회하여 validate
+  - API서버가 있어서, 사용자가 어떤 action을 취하기 전에 검증을 요청하면, CMDB를 조회하여 validate 수행
   - CMDB는 CI Space와 Config Space로 구성
     - Config Space는 HyperCloud 리소스들에 적용될 모든 구성과 설정 관련 룰 및 관계 정보를 가지고 있음
-    - CI Space는 HyperCloud의 '실제 생성된' 모든 리소스의 구성과 설정 정보를 가지고 있음
+    - CI Space는 HyperCloud의 '실제 생성된' 모든 리소스의 구성과 환경의 설정 정보를 가지고 있음
   - SysMaster 별 log DB, k8s log DB -> HyperData로 분석
 
 ## CI Space
