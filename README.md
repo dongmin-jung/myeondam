@@ -26,8 +26,7 @@
 - 값을 xml로 저장하는 방식으로 CI Space 구현하는 경우
   - 모든 CI 타입에 대해 전부 테이블을 설계할 필요 없이, xml 파일 형태로 저장
     - 이렇게 해도 tibero에서 xml 쿼리 조회가 가능
-    - jeus, tibero 설정값을 xml로 변환하여 저장
-    - etcd로부터 받는 json 데이터도 xml로 변환하여 저장
+    - 첫 번째 타겟인 etcd로부터 받는 json 데이터도 xml로 변환하여 저장
       - 이유 : tibero에서 json path에 따라 쿼리 결과를 추출하지 못한다. 반면 xpath query는 사용할 수 있음.
   - 빠른 개발이 가능하지만, 순수한 RDB에 비해 쿼리 성능이 안 좋을 수 있음
 - 일단 xml 기반으로 구현하여 성능을 테스트하고, 필요하다고 판단되면 CI 타입 별로 table을 만든다.
@@ -38,6 +37,6 @@
 - RDB로 구현한다면 Tibero를 사용할 수 있지만, 수많은 k8s 리소스 간 관계와 룰을 표현하기는 어려움
 - OWL2 기반의 Ontology KDB(??)로 구현하고자 함
   - Subject, Predicate, Object 형식을 사용하므로 관계의 표현에 적합함
-  - 기존에 정의한 relation들을 이용해서 새로운 relation을 정의하거나, inverse relation을 정의하거나, Transitivity, Symmetry 같은 성질에 의해 파생되는 relation을 정의하기가 용이하다.
   - Expression(Reasoning Rule??)
+  - 기존에 정의한 relation들을 이용해서 새로운 relation을 정의하거나, inverse relation을 정의하거나, Transitivity, Symmetry 같은 성질에 의해 파생되는 relation을 정의하기가 용이하다.
 - 하지만 KDB로만 할 것은 아님 -> KDB의 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둔다.
