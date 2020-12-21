@@ -8,19 +8,20 @@
   2. SysMaster WAS, SysMaster DB 각각으로부터 문제를 체크
   3. SysMaster, HyperData -> 연동 문제를 체크, 머신러닝으로 이상치 탐지
   4. 확장된 CMDB + SysMaster + HyperData
-- 1단계에서의 시나리오
+- 1단계에서의 시나리오 // class와 instance
   - 사용자가 Tibero 설정에 대한 검증을 요청하는 경우 - '바람직한 설정과 관계 룰' DB 필요
   - 사용자가 Pod label 바꾸면서 검증을 요청하면, Service와의 연결이 끊어질 것을 경고 - '실제 환경 구성 및 실존하는 리소스 간 관계들' DB 필요
 - HyperCAS 아키텍처
   - API서버가 있어서, 사용자가 어떤 action을 취하기 전에 검증을 요청하면, CMDB를 조회하여 validate 수행
   - CMDB는 CI Space와 Config Space로 구성
-    - CI Space는 HyperCloud의 '실제 생성된' 모든 리소스의 구성과 환경의 설정 정보를 가지고 있음
-    - Config Space는 HyperCloud 리소스들에 적용될 모든 구성과 설정 관련 룰 및 관계 정보를 가지고 있음
+    - Class instance로 설명
 
 ## CI Space
 
-- HyperCloud 설정값, 리소스들의 설정/상태값 저장 및 업데이트하는 데이터베이스
-- RDB만으로 CI Space 구현하는 경우
+- HyperCloud 설정값, 리소스들의 설정/상태값 저장 및 업데이트하는 데이터베이스  // instance
+- ci instance table - ci instance id / ci type / description(-> xml file)
+- ci type table - ci type / detail table
+- 이렇게 했을 때 (즉 순수 RDB로 구현한다면)
   - k8s 리소스들, jeus, tibero 등 수많은 CI 타입에 대하여 모두 테이블 설계가 필요
     - 대부분 depth와 hierarchy를 가지고 있어 매우 복잡하다.
 - 값을 xml로 저장하는 방식으로 CI Space 구현하는 경우
@@ -39,4 +40,5 @@
   - Subject, Predicate, Object 형식을 사용하므로 관계의 표현에 적합함
   - Expression(Reasoning Rule??)
   - 기존에 정의한 relation들을 이용해서 새로운 relation을 정의하거나, inverse relation을 정의하거나, Transitivity, Symmetry 같은 성질에 의해 파생되는 relation을 정의하기가 용이하다.
-- 하지만 KDB로만 할 것은 아님 -> KDB의 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둔다.
+- 하지만 KDB로만 할 것은 아님 -> KDB의 추론에 의한 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둬서 쿼리할 수 있게 한다.
+
