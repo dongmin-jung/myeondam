@@ -16,21 +16,21 @@
   - CMDB는 CI Space와 Config Space로 구성
     - CI Space는 HyperCloud의 '실제 생성된' 모든 리소스의 구성과 환경의 설정 정보를 가지고 있음
     - Config Space는 HyperCloud 리소스들에 적용될 모든 구성과 설정 관련 룰 및 관계 정보를 가지고 있음
-  - SysMaster 별 log DB, k8s log DB -> HyperData로 분석
 
 ## CI Space
 
 - HyperCloud 설정값, 리소스들의 설정/상태값 저장 및 업데이트하는 데이터베이스
-- k8s 리소스들은 설정값들이 depth와 hierarchy를 가진 tree 구조
-- 모든 hierarchy를 RDB만으로 CI Space 구현하는 경우
-  - 쿼리 성능은 우수하겠지만,
-  - k8s, jeus, tibero 등 수많은 CI 타입에 대하여 모두 DB 설계가 필요
-- xml 기반으로 CI Space 구현하는 경우
+- RDB만으로 CI Space 구현하는 경우
+  - k8s 리소스들, jeus, tibero 등 수많은 CI 타입에 대하여 모두 테이블 설계가 필요
+    - 대부분 depth와 hierarchy를 가지고 있어 매우 복잡하다.
+- 값을 xml로 저장하는 방식으로 CI Space 구현하는 경우
   - 모든 CI 타입에 대해 전부 테이블을 설계할 필요 없이, xml 파일 형태로 저장
     - 이렇게 해도 tibero에서 xml 쿼리 조회가 가능
-  - jeus, tibero 설정값을 xml로 저장, etcd로부터 받는 json 데이터도 xml로 만들어 저장
-  - 빠른 개발이 가능하지만, xpath 쿼리 성능이 안 좋을 수 있음
-- 일단 xml 기반으로 구현하여 성능을 테스트하고, 필요하다고 판단되면 CI별 table을 만든다.
+    - jeus, tibero 설정값을 xml로 변환하여 저장
+    - etcd로부터 받는 json 데이터도 xml로 변환하여 저장
+      - 이유 : tibero에서 json path에 따라 쿼리 결과를 추출하지 못한다. 반면 xpath query는 사용할 수 있음.
+  - 빠른 개발이 가능하지만, 순수한 RDB에 비해 쿼리 성능이 안 좋을 수 있음
+- 일단 xml 기반으로 구현하여 성능을 테스트하고, 필요하다고 판단되면 CI 타입 별로 table을 만든다.
 
 ## Config Space
 
