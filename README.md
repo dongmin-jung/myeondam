@@ -14,8 +14,8 @@
 - HyperCAS 아키텍처
   - API서버가 있어서, 사용자가 어떤 action을 취하기 전에 검증을 요청하면, CMDB를 조회하여 validate 수행
   - CMDB는 CI Space와 Config Space로 구성
-    - Config Space는 HyperCloud 리소스들에 적용될 모든 구성과 설정 관련 룰 및 관계 정보를 가지고 있음
     - CI Space는 HyperCloud의 '실제 생성된' 모든 리소스의 구성과 환경의 설정 정보를 가지고 있음
+    - Config Space는 HyperCloud 리소스들에 적용될 모든 구성과 설정 관련 룰 및 관계 정보를 가지고 있음
   - SysMaster 별 log DB, k8s log DB -> HyperData로 분석
 
 ## CI Space
