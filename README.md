@@ -30,7 +30,7 @@
     - 이렇게 해도 tibero에서 xml 쿼리 조회가 가능
   - jeus, tibero 설정값을 xml로 저장, etcd로부터 받는 json 데이터도 xml로 만들어 저장
   - 빠른 개발이 가능하지만, xpath 쿼리 성능이 안 좋을 수 있음
-- 일단 xml 기반으로 구현하여 성능을 테스트하고, 필요하다고 판단되면 CI별 table을 만든다
+- 일단 xml 기반으로 구현하여 성능을 테스트하고, 필요하다고 판단되면 CI별 table을 만든다.
 
 ## Config Space
 
@@ -38,6 +38,6 @@
 - RDB로 구현한다면 Tibero를 사용할 수 있지만, 수많은 k8s 리소스 간 관계와 룰을 표현하기는 어려움
 - OWL2 기반의 Ontology KDB(??)로 구현하고자 함
   - Subject, Predicate, Object 형식을 사용하므로 관계의 표현에 적합함
-  - 기존에 정의한 relation들을 이용해서 새로운 relation을 정의하거나, Transitivity, Symmetry 같은 성질을 그저 주기만 하는 것으로 relation을 쉽게 추가로 정의할 수 있다.
+  - 기존에 정의한 relation들을 이용해서 새로운 relation을 정의하거나, inverse relation을 정의하거나, Transitivity, Symmetry 같은 성질에 의해 파생되는 relation을 정의하기가 용이하다.
   - Expression(Reasoning Rule??)
-- 하지만 KDB로만 할 것은 아님 -> KDB의 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둔다
+- 하지만 KDB로만 할 것은 아님 -> KDB의 쿼리 성능이 좋지 않으니, 주기적으로 싱크 맞추는 RDB를 둔다.
