@@ -22,6 +22,7 @@
 - instance들의 공간
   - ci instance table - ci instance id / ci type / description(-> xml file)
   - ci type table - ci type / detail table
+  - history도 저장
 - 이렇게 순수 RDB로 구현하면
   - k8s 리소스들, jeus, tibero 등 수많은 CI 타입에 대하여 모두 테이블 설계가 필요
     - 대부분 depth와 hierarchy를 가지고 있어 매우 복잡하다.
@@ -35,7 +36,8 @@
 
 ## Config Space
 
-- HyperCloud의 바람직한 상태를 유지하기 위해 필요한 rule set (필수 property가 뭔지, 각 값의 바람직한 range가 뭔지)
+- class들의 공간
+  - HyperCloud의 바람직한 상태를 유지하기 위해 필요한 rule set
 - KDB로 구현하는 방안 검토를 위해 AS본부 민서준 팀장님과 논의해보았는데,
   - KDB가 여러 node 간의 관계 표현에 더 적합한 것은 맞지만...
   - KDB는 잘 변하지 않는 진리를 표현하는 데 적합 - 한 번 내용 입력 후 사전처럼 사용
