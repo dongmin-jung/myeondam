@@ -13,8 +13,8 @@
     - 사용자가 Tibero 설정에 대한 검증을 요청하는 경우 - 'rule set' DB 필요
     - 사용자가 Pod label 바꾸면서 검증을 요청하면, Service와의 연결이 끊어질 것을 경고 - 'rule set' + '실제 리소스 간 관계' DB 필요
   - CMDB는 instance들의 공간인 CI Space + class들의 공간인 Config Space로 구성
-    - CI Space - 실제 리소스들에 대한 설정과 서로간의 관계들
-    - Config Space - 바람직한 설정 정보 및 리소스 간 관계 룰들
+    - CI Space - 실제 리소스들에 대한 설정 정보
+    - Config Space - 바람직한 설정 룰, 리소스 간 관계 룰들
 
 ## CI Space
 
