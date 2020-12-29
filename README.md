@@ -10,7 +10,7 @@
   4. 모 ~ 든 ~ 것 ~
 - 1단계 프로토타입에서의 시나리오
   - 사용자가 action을 취하기 전에 검증을 요청하면, API서버에서 CMDB를 조회하여 validate 수행
-    - 사용자가 Tibero 설정에 대한 검증을 요청하는 경우 - '바람직한 설정 및 관계들의 rule set' DB 필요
+    - 사용자가 Tibero 설정에 대한 검증을 요청하는 경우 - 'rule set' DB 필요
     - 사용자가 Pod label 바꾸면서 검증을 요청하면, Service와의 연결이 끊어질 것을 경고 - 'rule set' + '실제 리소스 간 관계' DB 필요
   - CMDB는 instance들의 공간인 CI Space + class들의 공간인 Config Space로 구성
     - CI Space - 실제 리소스들에 대한 설정과 서로간의 관계들
