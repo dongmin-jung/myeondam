@@ -20,9 +20,8 @@
 
 - instance들의 공간
   - ci instance table - ci id / ci type / xml file
-    - xml parsing을 해야 하므로 query 성능이 좋지 않을 것임. 어떻게 해결하느냐? 기각/보류한 방안 2개
-      - Tibero에서 xml indexing
-      - 리소스의 depth와 hierarchy를 모두 커버하도록 테이블을 전부 설계하는 것
+    - xml parsing을 해야 하므로 query 성능이 좋지 않을 것임. 어떻게 해결하느냐?
+      - 리소스의 depth와 hierarchy를 모두 커버하도록 테이블을 전부 설계하기?
   - 선택한 대안 - xml index table - ci id (=ref) / ci type / xpath / key / value
     - key와 value column을 둔 것은 flexibility를 위함 -> 운영 중인 환경에서 DDL을 변경하지 않아도 되게 함
 - 교수님이 히스토리는 어디갔냐? 하시면 여기 CI Space에서 할거라 하기
