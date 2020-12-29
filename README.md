@@ -19,12 +19,15 @@
 ## CI Space
 
 - instance들의 공간
+  - 리소스들의 설정값은 depth와 hierarchy를 가지는 복잡한 구조
   - ci instance table - ci id / ci type / xml file
-    - xml parsing을 해야 하므로 query 성능이 좋지 않을 것임. 어떻게 해결하느냐?
-      - 리소스의 depth와 hierarchy를 모두 커버하도록 테이블을 전부 설계하기?
-  - 선택한 대안 - xml index table - ci id (=ref) / ci type / xpath / key / value
-    - key와 value column을 둔 것은 flexibility를 위함 -> 운영 중인 환경에서 DDL을 변경하지 않아도 되게 함
-- 교수님이 히스토리는 어디갔냐? 하시면 여기 CI Space에서 할거라 하기
+    - 빠른 진행이 가능하고 구조가 유연함
+    - query시 xml parsing을 해야 하므로 성능이 좋지 않을 것임
+    - 결국에는 depth와 hierarchy를 커버할 테이블을 전부 설계해야 하나?
+  - Tibero에서 지원하는 xpath indexing 사용 - ci id (=ref) / ci type / xpath / key / value
+    - key와 value를 각각 column으로 둔 것은 유연성을 높이기 위함
+      - 운영 중인 환경에서 DDL을 변경하지 않아도 됨
+- 교수님이 히스토리는 어디갔냐? 하시면 여기 CI Space에서 할거다
  
 ## Config Space
 
