@@ -24,7 +24,7 @@
     - 빠른 진행이 가능하고 구조가 유연함
     - query시 xml parsing을 해야 하므로 성능이 좋지 않을 것임
     - 결국에는 depth와 hierarchy를 커버할 테이블을 전부 설계해야 하나?
-  - Tibero에서 지원하는 xpath indexing 사용 - ci id (=ref) / ci type / xpath / key / value
+  - Tibero에서 지원하는 function based index (w/xpath) 사용 - ci id (=ref) / ci type / xpath / key / value
     - key와 value를 각각 column으로 둔 것은 유연성을 높이기 위함
       - 운영 중인 환경에서 DDL을 변경하지 않아도 됨
 - 교수님이 히스토리는 어디갔냐? 하시면 여기 CI Space에서 할거다
