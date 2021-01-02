@@ -1,36 +1,35 @@
-# HyperCAS CMDB 설계 방향
-
-## HyperCAS는 무엇인가
-
-- HyperCloud를 사용/운영하면서 발생할 수 있는 위험을 모니터링, 예방, 대응해줄 제품
-- 4단계 계획
-  1. CMDB만 -> 잘못된 설정을 방지
-  2. SysMaster WAS, SysMaster DB 각각으로부터 문제를 체크
-  3. SysMaster, HyperData -> 연동 문제, 머신러닝 이상치 탐지
-  4. 모 ~ 든 ~ 것 ~
-- 1단계 프로토타입에서의 시나리오
-  - 사용자가 action을 취하기 전에 검증을 요청하면, API서버에서 CMDB를 조회하여 validate 수행
-    - 사용자가 Tibero 설정에 대한 검증을 요청하는 경우 - 'rule set' DB 필요
-    - 사용자가 Pod label 바꾸면서 검증을 요청하면, Service와의 연결이 끊어질 것을 경고 - 'rule set' + '실제 리소스 간 관계' DB 필요
-  - CMDB는 instance들의 공간인 CI Space + class들의 공간인 Config Space로 구성
-    - CI Space - 실제 리소스들에 대한 설정 정보
-    - Config Space - 바람직한 설정 룰, 리소스 간 관계 룰들
-
-## CI Space
-
-- instance들의 공간
-  - 리소스들의 설정값은 depth와 hierarchy를 가지는 복잡한 구조
-  - ci instance table - ci id / ci type / xml file
-    - 빠른 진행이 가능하고 구조가 유연함
-    - query시 xml parsing을 해야 하므로 성능이 좋지 않을 것임
-    - 결국에는 depth와 hierarchy를 커버할 테이블을 전부 설계해야 하나?
-  - Tibero에서 지원하는 function based index (w/xpath) 사용 - ci id (=ref) / ci type / xpath / key / value
-    - key와 value를 각각 column으로 둔 것은 유연성을 높이기 위함
-      - 운영 중인 환경에서 DDL을 변경하지 않아도 됨
- 
-## Config Space
-
-- class들의 공간
-  - rule id / condition / expression
-    - 각 condition에 대해서 true/false expression을 각각 주면 row가 줄어들 수 있으나, 이분법을 피하는 편을 택함
-    - 새로운 rule이 추가될 때 새로운 condition을 작성해서 추가하게 해도 되지만, 기존 rule들을 조합해서도 표현할 수 있게 하려 함
+- HyperCAS = ADS + APS
+- ADS는 모니터링을 통한 비정상 디텍션
+	- 모니터링 : 통합 모니터링
+		- SysMaster(자사제품), Prometheus(HC Application), ETCD(HC resource), ???(infraData 호스트)
+	- 이벤트/로깅 : ELK의 EL을 활용한 데이터 (3팀 이승원 연구원)
+		- Elasticsearch: DB&SearchEngine / Logstash: DataExporter&Pipeline / Kibana: dashBoard
+	- CMDB : 모니터링, 로깅데이터 통합 저장소
+		- Static (config)
+			- 인스턴스 정보를 담기 위한 CI Table (설정값?)
+			- CI 관계를 표현하기 위한 CI Relation Table
+			- 정상동작 가능한 CI 설정값 정보 ConfigSpace
+		- Dynamic
+			- 실시간 리소스 사용량
+			- 로그/이벤트 데이터 (어케 저장할지는 좀더 생각필요...)
+		- CI - dynamic 맵핑 정보
+			- A라는 인스턴스는 b라는 dynamic정보를 뿌린다.
+	- 분석 : 유의미한 인사이트 제공을 위한 위의 데이터 분석
+		- 룰 기반 비정상 데이터 탐지
+			- 새로 만드려는 인스턴스가 configSpace의 validation에서 벗어남
+			- A 인스턴스 설정 변경이 B와의 relation을 끊어버림
+			- a라는 에러로그를 A라는 인스턴스가 뱉고있다
+		- 상관관계 분석
+			- a라는 에러는 A가 뱉고있는데, 이런에러는 BorCorD 인스턴스와 밀접한 관계가 있다.
+			- a라는 로그가 나오면 항상 b라는 로그가 따라온다
+			- A인스턴스의 실시간 리소스 사용량 a는 B인스턴스의 실시간 리소스 사용량 b와 추세가 비슷함			
+		- 시계열 데이터 분석
+			- A 인스턴스는 월요일마다 a라는 로그를 남기는데, 1/4일(월)에는 a가 없고 b라는 로그를 남긴다
+			- A 인스턴스가 화요일만 사용량이 많았는데, 수요일에도 많네?
+		- 회귀분석을 활용한 비정상 감지 등등
+			- A 인스턴스의 이전 리소스 사용량을 보았을때 지금은 2단계 수준의 사용량이 나와야 하는데, 지금은 1단계 사용량이네?
+	- 알림
+- APS는 비정상 프리벤션 (advanced)
+	- ADS의 후속 조치, 관리자가 특정 상황에서 미리 정의해둔 action을 자동 실행
+		- ex) auto scaling, 미리 정의해둔 코드뭉치 실행
+	- advanced 하게는 권장 action 인사이트 까지도 제공
