@@ -4,38 +4,24 @@
 
 ### 무엇을 할 것인가
 
-- 모니터링
-  - 이벤트 로그 수집 및 분석
-  - 실시간 모니터링 -> 룰 기반 이벤트 생성
-- 위험 방지/경고
-  - 사용자 액션 사전 검증
-  - 위험 이벤트 발생 시 이메일로 알림
-- 런타임 모니터링을 통한 위험 감지 및 대응
-  - 에러 로그 기반 원인(설정) 추적
-  - 시계열 분석을 통한 비정상 패턴 감지
-  - 관계 기반 영향 분석
-  - scale out / 사용자정의 코드뭉치 실행 / 사용자에게 액션 추천
-- 시나리오
-  - 1
-  - 2
-  - 3
+- Rule 기반의 Config Control
 
-### 어떻게 할 것인가
-
-- 자료의 수집
-  - 이벤트 로그 - (우리) 서버를 두고 각 (온갖) Master로부터 다 받는다???
-  - 실시간 모니터링 데이터 - SysMaster, Prometheus
-- AI
-  - outlier를 잡아내는 anomaly detection
-  - 시계열 학습을 통한 anomaly detection
-  - 리소스 시계열의 상관분석을 통한 연관성 유추
-  - 로그를 통한 설정 원인 파악 (or 룰 기반으로?)
-
-### CMDB 구성은 어떻게 할 것인가
-
-- CI Table, CI Relation Table, Config Space Table
-- Event Table, Metric Data Table
-- Error-Config Table
+- Runtime에서의 Dynamic Analysis
+  - 리소스 간 연관성 알아내기
+    - CMDB로부터 연관성을 알아내려면 사람이 봐야 할 게 너무 많은데다,
+    - Application 레벨까지 들어가면 CMDB에 나타나지 않는 연관성도 있을 수 있음
+    - 그러니, 시계열들의 correlation을 보고 리소스 간 연관성을 잡아낸다
+  - 이상 현상 탐지 (Anomaly Detection)
+    - 시계열, 로그, config 변경을 감지하여 event를 생성
+    - 근본 원인 분석 (Root Cause Analysis)
+      - 문제 발생 시점에 어떤 액션이 있었는지 보고 추적
+      - 제품에서 발생한 에러 코드로부터 설정 문제 추적
+      - 시나리오
+        - JEUS-WebtoB 연동 이슈 발생
+        - rule 에 기반해 연동 관련 static config 확인
+        - 설정에 이상이 있다면 정상 기동을 위한 static config 제안
+        - 이상이 없다면 각 제품 환경 상의 문제 확인
+        - 환경 상의 문제 확인될 시 k8s 모듈 config 수정 제안
 
 ---
 
