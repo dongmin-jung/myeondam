@@ -1,3 +1,46 @@
+# HyperCAS
+
+## 면담 스크립트
+
+### 무엇을 할 것인가
+
+- 모니터링
+  - 이벤트 로그 수집 및 분석
+  - 실시간 모니터링 -> 룰 기반 이벤트 생성
+- 위험 방지/경고
+  - 사용자 액션 사전 검증
+  - 위험 이벤트 발생 시 이메일로 알림
+- 런타임 모니터링을 통한 위험 감지 및 대응
+  - 에러 로그 기반 원인(설정) 추적
+  - 시계열 분석을 통한 비정상 패턴 감지
+  - 관계 기반 영향 분석
+  - scale out / 사용자정의 코드뭉치 실행 / 사용자에게 액션 추천
+- 시나리오
+  - 1
+  - 2
+  - 3
+
+### 어떻게 할 것인가
+
+- 자료의 수집
+  - 이벤트 로그 - (우리) 서버를 두고 각 (온갖) Master로부터 다 받는다???
+  - 실시간 모니터링 데이터 - SysMaster, Prometheus
+- AI
+  - outlier를 잡아내는 anomaly detection
+  - 시계열 학습을 통한 anomaly detection
+  - 리소스 시계열의 상관분석을 통한 연관성 유추
+  - 로그를 통한 설정 원인 파악 (or 룰 기반으로?)
+
+### CMDB 구성은 어떻게 할 것인가
+
+- CI Table, CI Relation Table, Config Space Table
+- Event Table, Metric Data Table
+- Error-Config Table
+
+---
+
+## 노정완 팀장님 아이디어
+
 - HyperCAS = ADS + APS
 - ADS는 모니터링을 통한 비정상 디텍션
   - 모니터링 : 통합 모니터링
@@ -32,8 +75,7 @@
     - 상관관계 분석
       - a라는 로그가 나오면 높은 확률로 b라는 로그가 따라온다
       - 실시간 리소스 사용량 a와 b의 추세가 비슷한걸 보니, 이와 맵핑된 A와 B 인스턴스는 밀접한 관계가 있다.
-        - tensorflow inference server의 network 사용량이 많은데 동일 시간에 istio-ingressgateway의 network사용량도 치솟는다.
-          이를보아 inferServ와 ist-Ingress의 인스턴스간 밀접한 관계가 있음을 알 수 있다.
+        - tensorflow inference server의 network 사용량이 많은데 동일 시간에 istio-ingressgateway의 network사용량도 치솟는다. 이를보아 inferServ와 ist-Ingress의 인스턴스간 밀접한 관계가 있음을 알 수 있다.
     - 시계열 데이터 분석 anomaly detect
       - A 인스턴스는 월요일마다 a라는 로그를 남기는데, 1/4일(월)에는 a가 없고 b라는 로그를 남긴다
       - A 인스턴스가 화요일만 사용량이 많았는데, 수요일에도 많다
@@ -45,3 +87,29 @@
     - 특정상황 : rule / anomaly...
     - ex) auto scaling, roll back, 미리 정의해둔 코드뭉치 실행
   - advanced 하게는 권장 action 인사이트 까지도 제공
+
+---
+
+## 이승진 연구원님 도움
+
+- 모니터링
+  - network, storage, cpu 등의 기본적인 metric 수집 (prometheus)
+  - 각 제품의 기동 및 연동 (WebtoB - Jeus - Tibero) 과 관련된 static config 는 config DB 에 수집
+  - 제품의 연동 상태 정보나 app-specific metric 등의 runtime variable (편의상 호칭) 은 master (agent..?, 제품 별 마스터인지 sysmaster 인지 마스터가 설계 상에 존재하는지는 모르겠지만..) 를 통해 prometheus 에 노출
+
+- 문제 발생하면 이를 찾고 -> 연관성 있는 이벤트들 찾아내고 -> 원인 알아내고 (rule based)
+  - static config 의 이상 유무 확인을 통해 기동 및 연동 상의 문제 예측 가능
+  - static config 와 runtime variable, runtime variable 과 metric 간의 상관 관계를 rule 로 정의 -> 본부 간 협의 필요
+    - ex. 특정 static config 는 특정 runtime variable 과 관계가 있다, 특정 config 가 잘못되면 특정 문제가 발생하고 특정 metric 또는 특정 runtime variable 이 이렇게 변할 수 있다 등
+  - config 에 이상이 있다는 것을 나타내는 metric 값이나 runtime variable  값을 event 로 정의
+
+- 대응 방법 추천
+  - event 가 발생했을 시 특정 config 를 조정하거나 특정 환경을 확인해보는 것을 제안
+  - 경고 및 rule 에 따른 대응 방법 추천
+
+- 시나리오 예시 (아키텍쳐가 어떻게 나올지 잘모르겠어서 위 정도 아키텍쳐로 생각해봤을 때...)
+  - 사용자가 web-was-db 구조의 web application 에 http request 를 보냈는데 에러 발생
+  - 각 제품의 기동 관련 이슈는 static config (env, arg 등), quota 정도..??
+  - webtob - jeus 연동 이슈 -> rule 에 기반해 연동 관련 static config 확인 (ip, port, thread pool 등) -> 설정에 이상이 있다면 정상 기동을 위한 static config 제안 -> 이상이 없다면 각 제품 pod 의 network, cpu 등의 metric 과 log 를 통해 환경 상의 문제 확인 -> 환경 상의 문제 확인될 시 calico, metallb config 등 kubernetes 모듈 config 수정 제안까지..?
+  - jeus - tibero 연동 이슈도 위와 유사 (datasource 관련 설정)
+  - 사실 jeus, tibero 같은 제품을 standalone 형태로 kube 에 띄우는 시나리오를 생각하는 건지도 잘 모르겠음..
