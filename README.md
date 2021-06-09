@@ -21,10 +21,10 @@
 - kube 서버에 리소스 정보를 요청하고 chunked response으로 받는다. (json)
   - 왜 안 웹소켓?
   - 커넥션 많은거 문제 안 될지?
-- json을 xml로 변환하여 DB에 삽입한다.
+- json을 xml로 변환하여, 해당 리소스의 히스토리를 DB에 삽입한다.
+  - Tibero가 지원하는 xpath query를 사용하기 위함
 
 ## 계획, 고민
 
-- hibernate 도입
-- xml json
-- rule, relation rule DB
+- hibernate 도입 / xml 말고 그냥 json으로 하면?
+- rule, relation rule DB 만들어야 하고 get할 때 쿼리 고민해야 한다.
