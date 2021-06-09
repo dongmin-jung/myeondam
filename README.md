@@ -24,6 +24,7 @@
   - 커넥션 많은거 문제 안 될지?
 - json을 xml로 변환하여, 해당 리소스의 히스토리를 DB에 삽입한다.
   - Tibero가 지원하는 xpath query를 사용하기 위함
+  - 이 과정에서 annotation의 key들 중 /를 포함하는 것들을 지워주고, managedFields의 `".":{}` 들을 지워주어야 함
 
 ## 계획, 고민
 
