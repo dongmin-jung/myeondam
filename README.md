@@ -8,7 +8,8 @@
 
 ## 시행착오
 
-- 초기에는 Operator SDK - Go 로 하다가 Java로 바꾸었음
+- 구조/설정을 모니터링하기 위해 CMDB 구축하고 Exporter 개발하는 것이 우선
+- 초기에는 Operator Lifecycle Manager를 사용하기 위해 Operator SDK - Go 로 하다가 Java로 바꾸었음
   - Operator SDK에서 제공하는 기능은 Custom Resource에 대한 Controller 기능에 집중되어 있음
     - CR들을 watch하고, 생성/변경/삭제가 감지된 CR의 namespace와 name을 전달받아 CR과 연관된/소유하는 리소스에 대한 reconcile
     - 목적에 맞게 watch 대상들을 특정하기 어렵고, watch한 리소스의 namespace와 name을 받아도 그게 어느 리소스였는지 알 수가 없음
@@ -26,5 +27,5 @@
 
 ## 계획, 고민
 
-- hibernate 도입 / xml 말고 그냥 json으로 하면?
+- hibernate을 통한 ORM 도입 / xml 말고 그냥 json으로 하면?
 - rule, relation rule DB 만들어야 하고 get할 때 쿼리 고민해야 한다.
